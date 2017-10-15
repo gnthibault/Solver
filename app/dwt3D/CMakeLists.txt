@@ -3,15 +3,15 @@ cmake_minimum_required(VERSION 3.5)
 ##################
 #  Generic Part  #
 ##################
-project(democpp)
-set(OUTPUT_NAME  democpp)
+project(dwt3D)
+set(OUTPUT_NAME dwt3D)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 ###############
 #  Src files  #
 ###############
 set(sources
-  demo.cpp
+  dwt3D.cpp
 )
 
 set(headers
@@ -27,7 +27,7 @@ include_directories("${PRJ_ROOT_DIR}/src")
 ################
 add_executable(${OUTPUT_NAME} ${sources})
 target_link_libraries(${OUTPUT_NAME}
-  pdwt
+  Solver
   ${openmp_deps}
 )
 set_property(TARGET ${OUTPUT_NAME}

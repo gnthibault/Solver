@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.5)
 #################
 #  Generic Part #
 #################
-project(pdwt)
-set(OUTPUT_NAME pdwt)
+project(Solver)
+set(OUTPUT_NAME Solver)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 ###############
@@ -12,15 +12,16 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 ###############
 if (CUDA_FOUND AND USE_CUDA)
   set(sources_cuda
-    cuda/CoeffContainer.cu
-    cuda/Constant.cu
+    cuda/utils/Constant.cu
 
     #utils
     cuda/utils/DeviceManager.cu
-  )
+
+    #Field
+    #Field/CoeffContainer.cu
+)
   set(headers_cuda
-    cuda/DeviceManager.cu.h
-    cuda/ManagedAllocator.cu.h
+    cuda/utils/ManagedAllocator.cu.h
 
     #utils
     cuda/utils/DeviceManager.cu.h
@@ -34,22 +35,28 @@ endif ()
 #  Src files  #
 ###############
 set(sources
-  Filters.cpp
-  CoeffContainer.cpp
-  Wavelet.cpp
-  Wavelet1D.cpp
-  Wavelet2D.cpp
-  Wavelet3D.cpp
+# Field
+  Field/CoeffContainer.cpp
+
+# Operator
+  Operator/Wavelet/Filters.cpp
+  Operator/Wavelet/Wavelet.cpp
+  Operator/Wavelet/Wavelet1D.cpp
+  Operator/Wavelet/Wavelet2D.cpp
+  Operator/Wavelet/Wavelet3D.cpp
   # cuda source files
   ${sources_cuda}
 )
 
 set(headers
-  Filters.h
-  Wavelet.h
-  Wavelet1D.h
-  Wavelet2D.h
-  Wavelet3D.h
+# Field
+  Field/Filters.h
+
+# Operator
+  Operator/Wavelet/Wavelet.h
+  Operator/Wavelet/Wavelet1D.h
+  Operator/Wavelet/Wavelet2D.h
+  Operator/Wavelet/Wavelet3D.h
   # cuda header files
   ${headers_cuda}
 )
@@ -66,7 +73,6 @@ else ()
 endif ()
 target_link_libraries(${OUTPUT_NAME}
   ${cuda_deps}
-  ${mpi_deps}
   ${boost_deps}
   ${openmp_deps})
 set_property(TARGET ${OUTPUT_NAME}

@@ -1,5 +1,5 @@
-#ifndef 
-#define DEVICEMANAGER_CU_H_
+#ifndef DEVICEMANAGER_CU_H
+#define DEVICEMANAGER_CU_H
 
 // STL
 #include <vector>
@@ -43,4 +43,4 @@ class DeviceManager {
   std::vector<DeviceDesc> m_vDeviceDesc;
 };
 
-#endif // DEVICEMANAGER_CU_H_
+#endif // DEVICEMANAGER_CU_H

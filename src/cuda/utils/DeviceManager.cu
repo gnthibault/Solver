@@ -1,5 +1,5 @@
 //Local
-#include "DeviceManager.cu.h"
+#include "cuda/utils/DeviceManager.cu.h"
 
 //STL
 #include <algorithm>
@@ -11,9 +11,13 @@
 //OMP
 #include <omp.h>
 
+//Local
+#include <cuda/utils/utils.cu.h>
+
+#define MIN_COMPUTE_CAPABILITY 3
 #define NB_BYTE_PER_GIGA 1024*1024*1024
 
-DeviceManager& CudaMultiGPUManager::GetInstance() {
+DeviceManager& DeviceManager::GetInstance() {
   static DeviceManager instance;
   return instance;
 }
@@ -37,7 +41,7 @@ void DeviceManager::reset(size_t nbDevice) {
     bool bComputeCompatibility=true;
     checkCudaErrors(cudaGetDeviceProperties(&devProp,devId));
 
-    if (devProp.major<=MIN_CUDA_COMPUTE_CAPABILITY_MAJOR) {
+    if (devProp.major<=MIN_COMPUTE_CAPABILITY) {
       std::cout<<"Device "<<devId<<" compute capability is too old"<<std::endl;
       //TODO TN: cudaDeviceGetByPCIBusId()
       bComputeCompatibility=false;
@@ -49,7 +53,7 @@ void DeviceManager::reset(size_t nbDevice) {
       //Build DeviceDesc
       DeviceDesc devDesc;
       devDesc.id=devId;
-      devDesc.deviceProp=devProp
+      devDesc.deviceProp=devProp;
       //By default, create only one stream
       cudaStream_t cudaStream;
       checkCudaErrors(cudaStreamCreate(&cudaStream));
@@ -68,8 +72,8 @@ int DeviceManager::GetCurrentDeviceIdx() const {
   int devId;
   checkCudaErrors(cudaGetDevice(&devId));
 
-  auto it=std::find(m_vDeviceDesc.cbegin(), m_vDeviceDesc.cend(),
-    [](auto in) {return in.id==devId;} );
+  auto it=std::find_if(m_vDeviceDesc.cbegin(), m_vDeviceDesc.cend(),
+    [devId](const DeviceDesc& in) {return in.id==devId;} );
 
   assert(it!=m_vDeviceDesc.cend() );
   return std::distance(m_vDeviceDesc.cbegin(), it) ;

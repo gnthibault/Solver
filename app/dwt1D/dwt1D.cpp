@@ -6,8 +6,8 @@
 #include <vector>
 
 // Lib
-#include "CoeffContainer.h"
-#include "Wavelet1D.h"
+#include "Field/CoeffContainer.h"
+#include "Operator/Wavelet/Wavelet1D.h"
 
 using T = float;
 

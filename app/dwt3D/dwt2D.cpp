@@ -7,36 +7,29 @@
 
 // Lib
 #include "CoeffContainer.h"
-#include "Wavelet3D.h"
+#include "Wavelet2D.h"
 
 using T = float;
 
 int main(int argc, char **argv) {
 
 
-  int sizeX=8;
-  int sizeY=8;
-  int sizeZ=8;
+  int sizeX=16;
+  int sizeY=16;
 
-  auto modify = [sizeX,sizeY,sizeZ](auto* ptr) {
-    for(int k =0; k<sizeZ; k++) {
-      for(int j=0; j<sizeY; j++) {
-        for(int i=0; i<sizeX; i++) {
-          ptr[k*sizeX*sizeY+j*sizeX+i]=k*sizeX*sizeY+j*sizeX+i;
-        }
+  auto modify = [sizeX,sizeY](auto* ptr) {
+    for(int j=0; j<sizeY; j++) {
+      for(int i=0; i<sizeX; i++) {
+        //ptr[j*sizeX+i]=j;
+        ptr[j*sizeX+i]=i+8*j;
       }
     }
   };
-
-  auto print = [sizeX,sizeY, sizeZ](auto* ptr) {
-    for(int k =0; k<sizeZ; k++) {
-      for(int j=0; j<sizeY; j++) {
-        for(int i=0; i<sizeX; i++) {
-          std::cout<<ptr[k*sizeX*sizeY+j*sizeX+i]<<", ";
-        }
-        std::cout<<std::endl;
+  auto print = [sizeX,sizeY](auto* ptr) {
+    for(int j=0; j<sizeY; j++) {
+      for(int i=0; i<sizeX; i++) {
+        std::cout<<ptr[j*sizeX+i]<<", ";
       }
-      std::cout<<std::endl;
       std::cout<<std::endl;
     }
   };
@@ -44,7 +37,7 @@ int main(int argc, char **argv) {
 
 
   // Define input/output
-  std::vector<T> in(sizeX*sizeY*sizeZ);
+  std::vector<T> in(sizeX*sizeY);
   //std::iota(in.begin(), in.end(),0);
   //std::fill(in.begin(), in.end(), 2);
   modify(in.data());
@@ -53,10 +46,11 @@ int main(int argc, char **argv) {
   print(in.data());
 
   // Define wavelet tranform
-  //Daub2_3D<T> w(in.data(),sizeX,sizeY,sizeZ,false,"Daub2",3);
-  //Anto97_BiOrth_3D<T> w(in.data(),sizeX,sizeY,sizeZ,false,"Anto97",1);
-  //REVERSE_QSHIFT6_Orth_3D<T> w(in.data(),sizeX,sizeY,sizeZ,false,"QSHIFT6",1);
-  dtwAnto97QSHIFT6_3D<T> w(in.data(),sizeX,sizeY,sizeZ,false,"DTCWT",2); 
+  //Dummy2_2D<T> w(in.data(),sizeX,sizeY,1,false,"Daub2",1);
+  //Daub2_2D<T> w(in.data(),sizeX,sizeY,1,false,"Daub2",2);
+  //Anto97_BiOrth_1D<T> w(in.data(),sizeX,sizeY,1,false,"Anto97",1);
+  //REVERSE_QSHIFT6_Orth_1D<T> w(in.data(),sizeX,sizeY,false,"QSHIFT6",1);
+  dtwAnto97QSHIFT6_2D<T> w(in.data(),sizeX,sizeY,1,false,"DTCWT",3); 
     
 
   // print coeffs when initialized

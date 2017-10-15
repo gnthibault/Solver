@@ -2,15 +2,15 @@
 #define WAVELET2D_H
 
 // Local
-#include "Wavelet.h"
+#include "Operator/Wavelet/Wavelet.h"
 
 // STL
 #include <vector>
 
 // Local
-#include "CoeffContainer.h"
-#include "Filters.h"
-#include "Separable.h"
+#include "Field/CoeffContainer.h"
+#include "Operator/Wavelet/Filters.h"
+#include "Operator/Wavelet/Separable.h"
 #include "vectorization/Vectorization.h"
 
 

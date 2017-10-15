@@ -49,83 +49,72 @@ endif ()
 #  Cuda Compilation options  #
 ##############################
 
-find_package(CUDA 8.0)
 
-if (CUDA_FOUND AND USE_CUDA)
-  add_definitions(-DUSE_CUDA)
-  
-  if (THRUST_BACKEND STREQUAL "OMP") 
-    list(APPEND CUDA_NVCC_FLAGS
-      -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP
-      -Xcompiler -fopenmp)
-    list(APPEND cuda_deps gomp)
-  elseif (THRUST_BACKEND STREQUAL "TBB") 
+if (USE_CUDA)
+  find_package(CUDA 8.0)
+
+  if (CUDA_FOUND AND USE_CUDA)
+    add_definitions(-DUSE_CUDA)
     
-  elseif (THRUST_BACKEND STREQUAL "CUDA")
+    if (THRUST_BACKEND STREQUAL "OMP") 
+      list(APPEND CUDA_NVCC_FLAGS
+        -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_OMP
+        -Xcompiler -fopenmp)
+      list(APPEND cuda_deps gomp)
+    elseif (THRUST_BACKEND STREQUAL "TBB") 
+      
+    elseif (THRUST_BACKEND STREQUAL "CUDA")
+      list(APPEND CUDA_NVCC_FLAGS
+        -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA)
+    endif ()
+
+      #Eventually add some code instrumentation
+    if (USE_NVTX)
+      add_definitions(-DUSE_NVTX)
+    endif ()
+
+    #generic compilation flag, defines target architecture, type of build, ...
     list(APPEND CUDA_NVCC_FLAGS
-      -DTHRUST_DEVICE_SYSTEM=THRUST_DEVICE_SYSTEM_CUDA)
+      -gencode arch=compute_30,code=sm_30
+      -gencode arch=compute_35,code=sm_35
+      -gencode arch=compute_50,code=sm_50
+      -gencode arch=compute_52,code=sm_52
+      -gencode arch=compute_60,code=sm_60
+      -gencode arch=compute_61,code=sm_61
+      -std=c++11
+      --expt-extended-lambda
+      -rdc=true
+      -Xcompiler -fPIC)
+
+    set(CUDA_SEPARABLE_COMPILATION ON)
+
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug") 
+      list(APPEND CUDA_NVCC_FLAGS 
+        --device-debug
+        --generate-line-info
+        -g
+        -G
+        -DTHRUST_DEBUG )
+    else ()
+      list(APPEND CUDA_NVCC_FLAGS
+        -use_fast_math
+        -O3)
+    endif ()
+    #runtime libs for cuda
+    list(APPEND cuda_deps cudadevrt nvToolsExt)
+    link_directories(${CUDA_TOOLKIT_ROOT_DIR}/lib64)
   endif ()
-
-    #Eventually add some code instrumentation
-  if (USE_NVTX)
-    add_definitions(-DUSE_NVTX)
-  endif ()
-
-  #generic compilation flag, defines target architecture, type of build, ...
-  list(APPEND CUDA_NVCC_FLAGS
-    -gencode arch=compute_30,code=sm_30
-    -gencode arch=compute_35,code=sm_35
-    -gencode arch=compute_50,code=sm_50
-    -gencode arch=compute_52,code=sm_52
-    -gencode arch=compute_60,code=sm_60
-    -gencode arch=compute_61,code=sm_61
-    -std=c++11
-    --expt-extended-lambda
-    -rdc=true
-    -Xcompiler -fPIC)
-
-  set(CUDA_SEPARABLE_COMPILATION ON)
-
-  if (CMAKE_BUILD_TYPE STREQUAL "Debug") 
-    list(APPEND CUDA_NVCC_FLAGS 
-      --device-debug
-      --generate-line-info
-      -g
-      -G
-      -DTHRUST_DEBUG )
-  else ()
-    list(APPEND CUDA_NVCC_FLAGS
-      -use_fast_math
-      -O3)
-  endif ()
-  #runtime libs for cuda
-  list(APPEND cuda_deps cudadevrt nvToolsExt)
-  link_directories(${CUDA_TOOLKIT_ROOT_DIR}/lib64)
-endif ()
-
-############
-# MPI Part #
-############
-find_package(MPI)
-if (MPI_FOUND AND USE_MPI)
-  add_definitions(-DUSE_MPI)
-  include_directories(${MPI_INCLUDE_PATH})
-  #runtime libs for mpi
-  set(mpi_deps ${MPI_CXX_LIBRARIES})
-endif ()
-#############
-# /MPI Part #
-#############
+endif()
 
 ###############
 # Boost part  #
 ###############
-find_package(Boost COMPONENTS mpi serialization) 
+find_package(Boost REQUIRED)# COMPONENTS iterator) 
 if (Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
-  link_directories(${Boost_LIBRARY_DIRS})
+  #link_directories(${Boost_LIBRARY_DIRS})
   #runtime libs for boost
-  set(boost_deps boost_mpi boost_serialization)
+  #set(boost_deps boost_iterator)
 endif ()
 ################
 # /Boost part  #

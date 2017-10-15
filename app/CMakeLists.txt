@@ -4,10 +4,12 @@ cmake_minimum_required (VERSION 3.5)
 #  Adding various code directories  #
 #####################################
 
-add_subdirectory(democpp)
-add_subdirectory(demo2Dcpp)
-add_subdirectory(demo3Dcpp)
+add_subdirectory(dwt1D)
+add_subdirectory(dwt2D)
+add_subdirectory(dwt3D)
 
 if (CUDA_FOUND AND USE_CUDA)
-  add_subdirectory(democuda)
+#  add_subdirectory(dwt2Dcuda)
+  add_subdirectory(dwt2Dcuda)
+#  add_subdirectory(dwt2Dcuda)
 endif ()

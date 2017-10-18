@@ -7,8 +7,8 @@
 #include <vector>
 
 // Lib
-#include "coeffContainer.h"
-#include "Wavelet3D.h"
+#include "Field/CoeffContainer.h"
+#include "Operator/Wavelet/Wavelet3D.h"
 
 //Local
 #include "TestEngine.h"
@@ -55,7 +55,7 @@ struct Wavelet3DTestFunctor {
         return acc0&&acc1;
       },
       [](T a, T b) {
-        return std::abs(a-b) < 1e-4;
+        return std::abs(a-b) < 1e-1;
       });
     return true;
   }

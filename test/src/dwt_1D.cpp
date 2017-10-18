@@ -7,8 +7,8 @@
 #include <vector>
 
 // Lib
-#include "coeffContainer.h"
-#include "Wavelet1D.h"
+#include "Field/CoeffContainer.h"
+#include "Operator/Wavelet/Wavelet1D.h"
 
 //Local
 #include "TestEngine.h"
